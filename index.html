@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CJ 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #ffe6f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  text-align: center;
+}
+
+.container {
+  background: white;
+  padding: 40px 25px;
+  border-radius: 25px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+  position: relative;
+}
+
+.cj-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ff3399;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-weight: 900;
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #ff4da6;
+}
+
+.messageBox {
+  background: #fff0f5;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 20px;
+  font-weight: 900;
+  color: #ff1a75;
+  font-size: 24px;
+  min-height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 14px 28px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-weight: 700;
+}
+
+#yesBtn {
+  background: #ff66b2;
+  color: white;
+}
+
+#yesBtn:hover {
+  transform: scale(1.1);
+}
+
+#noBtn {
+  background: #ff99cc;
+  color: white;
+  position: relative;
+}
+
+/* Confetti */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="cj-name">CJ "MY BEBU" 💖</div>
+  <h1>WILL YOU BE MY VALENTINE?</h1>
+
+  <div class="messageBox" id="message"></div>
+
+  <div class="buttons">
+    <button id="yesBtn">YES 💖</button>
+    <button id="noBtn">NO 🙈</button>
+  </div>
+</div>
+
+<!-- Embedded AWW SOUND Base64 -->
+<audio id="awwSound">
+  <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAwAA... (truncated for brevity)" type="audio/mp3">
+</audio>
+
+<!-- Embedded Romantic Music Base64 -->
+<audio id="bgMusic" loop>
+  <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAwAA... (truncated for brevity)" type="audio/mp3">
+</audio>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const message = document.getElementById("message");
+const awwSound = document.getElementById("awwSound");
+const bgMusic = document.getElementById("bgMusic");
+
+let clickCount = 0;
+
+const funnyTexts = [
+  "ARE YOU SURE? 🥺",
+  "NOPE NOT GONNA HAPPEN 😤",
+  "TRY AGAIN BEBU 😌",
+  "WHY U CLICKING NOOO 😭",
+  "LAST CHANCE... 😈"
+];
+
+// Start music on first interaction
+document.body.addEventListener("click", () => {
+  bgMusic.volume = 0.4;
+  bgMusic.play().catch(()=>{});
+}, { once: true });
+
+noBtn.addEventListener("click", function() {
+  awwSound.currentTime = 0;
+  awwSound.play().catch(()=>{});
+
+  if (clickCount < funnyTexts.length) {
+    message.textContent = funnyTexts[clickCount];
+  }
+
+  clickCount++;
+
+  const x = Math.random() * 200 - 100;
+  const y = Math.random() * 200 - 100;
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+yesBtn.addEventListener("click", function() {
+  // Show message inside white box
+  message.textContent = "AS U SHOULD, I'M UR BEBU HEHI 💘";
+
+  // Hide NO button
+  noBtn.style.display = "none";
+
+  // Confetti explosion
+  for (let i = 0; i < 100; i++) {
+    let conf = document.createElement("div");
+    conf.classList.add("confetti");
+    conf.style.left = Math.random() * 100 + "vw";
+    conf.style.background = ["#ff66b2","#ff99cc","#ff1a75","#ffb3d9"][Math.floor(Math.random()*4)];
+    conf.style.animationDuration = (Math.random() * 2 + 2) + "s";
+    document.body.appendChild(conf);
+
+    setTimeout(() => conf.remove(), 3000);
+  }
+});
+</script>
+
+</body>
+</html>
