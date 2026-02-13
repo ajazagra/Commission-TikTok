@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CJ 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #ffe6f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  text-align: center;
+}
+
+.container {
+  background: white;
+  padding: 40px 25px;
+  border-radius: 25px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+  position: relative;
+}
+
+.cj-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ff3399;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-weight: 900;
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #ff4da6;
+}
+
+.messageBox {
+  background: #fff0f5;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 20px;
+  font-weight: 900;
+  color: #ff1a75;
+  font-size: 24px;
+  min-height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 14px 28px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-weight: 700;
+}
+
+#yesBtn {
+  background: #ff66b2;
+  color: white;
+}
+
+#yesBtn:hover { transform: scale(1.1); }
+
+#noBtn {
+  background: #ff99cc;
+  color: white;
+  position: relative;
+}
+
+/* Confetti */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="cj-name">CJ "MY BEBU" 💖</div>
+  <h1>WILL YOU BE MY VALENTINE?</h1>
+
+  <div class="messageBox" id="message"></div>
+
+  <div class="buttons">
+    <button id="yesBtn">YES 💖</button>
+    <button id="noBtn">NO 🙈</button>
+  </div>
+</div>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const message = document.getElementById("message");
+let clickCount = 0;
+
+const funnyTexts = [
+  "ARE YOU SURE? 🥺",
+  "NOPE NOT GONNA HAPPEN 😤",
+  "TRY AGAIN BEBU 😌",
+  "WHY U CLICKING NOOO 😭",
+  "LAST CHANCE... 😈"
+];
+
+// Web Audio API context
+let audioCtx = null;
+
+// Lively "Aww" for NO button
+function playAwwLively() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+
+  o.type = 'sine';
+  o.frequency.setValueAtTime(440, audioCtx.currentTime);
+
+  g.gain.setValueAtTime(0, audioCtx.currentTime);
+  g.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.05);
+  g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+
+  o.connect(g);
+  g.connect(audioCtx.destination);
+
+  lfo.type = 'sine';
+  lfo.frequency.setValueAtTime(8, audioCtx.currentTime);
+  lfoGain.gain.setValueAtTime(15, audioCtx.currentTime);
+  lfo.connect(lfoGain);
+  lfoGain.connect(o.frequency);
+
+  o.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.5);
+
+  o.start();
+  lfo.start();
+  o.stop(audioCtx.currentTime + 0.5);
+  lfo.stop(audioCtx.currentTime + 0.5);
+}
+
+// Upbeat celebratory sound for YES
+function playCelebration() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  for(let i=0;i<6;i++){ // 6 ascending notes
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type='triangle';
+    g.gain.setValueAtTime(0.2, audioCtx.currentTime + i*0.15);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    let freq = 300 + i*100; // ascending notes
+    o.frequency.setValueAtTime(freq, audioCtx.currentTime + i*0.15);
+    o.start(audioCtx.currentTime + i*0.15);
+    o.stop(audioCtx.currentTime + i*0.15 + 0.4);
+  }
+}
+
+// Vibration fallback for silent phones
+function vibrateFallback() {
+  if(navigator.vibrate) navigator.vibrate(200);
+}
+
+// NO button click
+noBtn.addEventListener("click", function() {
+  playAwwLively();
+  vibrateFallback();
+  if(clickCount < funnyTexts.length) message.textContent = funnyTexts[clickCount];
+  clickCount++;
+  const x = Math.random()*200 - 100;
+  const y = Math.random()*200 - 100;
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+// YES button click
+yesBtn.addEventListener("click", function() {
+  message.textContent = "AS U SHOULD, I'M UR BEBU HEHI 💘";
+  noBtn.style.display="none";
+  playCelebration();
+  vibrateFallback();
+
+  // Confetti explosion
+  for(let i=0;i<100;i++){
+    let conf=document.createElement("div");
+    conf.classList.add("confetti");
+    conf.style.left=Math.random()*100+"vw";
+    conf.style.background=["#ff66b2","#ff99cc","#ff1a75","#ffb3d9"][Math.floor(Math.random()*4)];
+    conf.style.animationDuration=(Math.random()*2+2)+"s";
+    document.body.appendChild(conf);
+    setTimeout(()=>conf.remove(),3000);
+  }
+});
+</script>
+
+</body>
+</html>
