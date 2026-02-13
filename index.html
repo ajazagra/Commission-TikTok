@@ -107,7 +107,6 @@ button {
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
@@ -122,23 +121,10 @@ button {
   </div>
 </div>
 
-<!-- Embedded AWW SOUND Base64 -->
-<audio id="awwSound">
-  <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAwAA... (truncated for brevity)" type="audio/mp3">
-</audio>
-
-<!-- Embedded Romantic Music Base64 -->
-<audio id="bgMusic" loop>
-  <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAwAA... (truncated for brevity)" type="audio/mp3">
-</audio>
-
 <script>
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const message = document.getElementById("message");
-const awwSound = document.getElementById("awwSound");
-const bgMusic = document.getElementById("bgMusic");
-
 let clickCount = 0;
 
 const funnyTexts = [
@@ -149,44 +135,85 @@ const funnyTexts = [
   "LAST CHANCE... 😈"
 ];
 
-// Start music on first interaction
-document.body.addEventListener("click", () => {
-  bgMusic.volume = 0.4;
-  bgMusic.play().catch(()=>{});
-}, { once: true });
+// Web Audio API context
+let audioCtx = null;
 
-noBtn.addEventListener("click", function() {
-  awwSound.currentTime = 0;
-  awwSound.play().catch(()=>{});
+// Lively "Aww" for NO button
+function playAwwLively() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  if (clickCount < funnyTexts.length) {
-    message.textContent = funnyTexts[clickCount];
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+
+  o.type = 'sine';
+  o.frequency.setValueAtTime(440, audioCtx.currentTime);
+  g.gain.setValueAtTime(0, audioCtx.currentTime);
+  g.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.05);
+  g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+
+  o.connect(g);
+  g.connect(audioCtx.destination);
+
+  lfo.type = 'sine';
+  lfo.frequency.setValueAtTime(8, audioCtx.currentTime);
+  lfoGain.gain.setValueAtTime(15, audioCtx.currentTime);
+  lfo.connect(lfoGain);
+  lfoGain.connect(o.frequency);
+
+  o.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.5);
+
+  o.start();
+  lfo.start();
+  o.stop(audioCtx.currentTime + 0.5);
+  lfo.stop(audioCtx.currentTime + 0.5);
+}
+
+// Upbeat celebratory sound for YES button
+function playCelebration() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  for(let i=0;i<5;i++){ // 5 notes
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type='triangle';
+    g.gain.setValueAtTime(0.15, audioCtx.currentTime + i*0.15);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    let freq = 300 + i*80; // ascending notes
+    o.frequency.setValueAtTime(freq, audioCtx.currentTime + i*0.15);
+    o.start(audioCtx.currentTime + i*0.15);
+    o.stop(audioCtx.currentTime + i*0.15 + 0.3);
   }
+}
 
+// NO button click
+noBtn.addEventListener("click", function() {
+  playAwwLively();
+  if(clickCount < funnyTexts.length) message.textContent = funnyTexts[clickCount];
   clickCount++;
-
-  const x = Math.random() * 200 - 100;
-  const y = Math.random() * 200 - 100;
+  const x = Math.random()*200 - 100;
+  const y = Math.random()*200 - 100;
   noBtn.style.transform = `translate(${x}px, ${y}px)`;
 });
 
+// YES button click
 yesBtn.addEventListener("click", function() {
-  // Show message inside white box
   message.textContent = "AS U SHOULD, I'M UR BEBU HEHI 💘";
+  noBtn.style.display="none";
 
-  // Hide NO button
-  noBtn.style.display = "none";
+  playCelebration();
 
   // Confetti explosion
-  for (let i = 0; i < 100; i++) {
-    let conf = document.createElement("div");
+  for(let i=0;i<100;i++){
+    let conf=document.createElement("div");
     conf.classList.add("confetti");
-    conf.style.left = Math.random() * 100 + "vw";
-    conf.style.background = ["#ff66b2","#ff99cc","#ff1a75","#ffb3d9"][Math.floor(Math.random()*4)];
-    conf.style.animationDuration = (Math.random() * 2 + 2) + "s";
+    conf.style.left=Math.random()*100+"vw";
+    conf.style.background=["#ff66b2","#ff99cc","#ff1a75","#ffb3d9"][Math.floor(Math.random()*4)];
+    conf.style.animationDuration=(Math.random()*2+2)+"s";
     document.body.appendChild(conf);
-
-    setTimeout(() => conf.remove(), 3000);
+    setTimeout(()=>conf.remove(),3000);
   }
 });
 </script>
