@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,10 +23,10 @@ body {
     border-radius: 20px;
     text-align: center;
     width: 90%;
-    max-width: 350px;
+    max-width: 360px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     position: relative;
-    z-index: 10;
+    z-index: 2;
 }
 
 h1 { color: #ff4d88; }
@@ -44,6 +44,7 @@ button {
     border: none;
     border-radius: 25px;
     cursor: pointer;
+    transition: 0.2s ease;
 }
 
 #yesBtn {
@@ -59,6 +60,7 @@ button {
 #funnyText {
     margin-top: 15px;
     min-height: 24px;
+    font-size: 15px;
 }
 
 #warning {
@@ -69,7 +71,7 @@ button {
 }
 
 #countdown {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
     color: darkred;
     display: none;
@@ -106,24 +108,23 @@ button {
     to { transform: translateY(100vh) rotate(720deg); opacity:0;}
 }
 
-/* Screen Shake */
+/* Shake */
 @keyframes shake {
-    0% { transform: translate(1px, 1px); }
-    25% { transform: translate(-1px, 2px); }
-    50% { transform: translate(-3px, 1px); }
-    75% { transform: translate(3px, 1px); }
-    100% { transform: translate(1px, -1px); }
+    0% { transform: translate(2px, 1px); }
+    50% { transform: translate(-2px, -1px); }
+    100% { transform: translate(2px, 1px); }
 }
 .shake {
-    animation: shake 0.3s infinite;
+    animation: shake 0.2s infinite;
 }
 </style>
 </head>
 
 <body>
 
-<audio id="boing" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
-<audio id="applause" src="https://www.soundjay.com/human/applause-8.mp3"></audio>
+<!-- Softer AWWW sound -->
+<audio id="awwSound" src="https://www.myinstants.com/media/sounds/aww.mp3"></audio>
+<audio id="winSound" src="https://www.soundjay.com/human/applause-8.mp3"></audio>
 
 <div class="card" id="card">
     <h1>CJ (MY BEBU) 💕</h1>
@@ -150,30 +151,29 @@ const funnyText = document.getElementById("funnyText");
 const warning = document.getElementById("warning");
 const countdownEl = document.getElementById("countdown");
 const message = document.getElementById("message");
-const boing = document.getElementById("boing");
-const applause = document.getElementById("applause");
+const awwSound = document.getElementById("awwSound");
+const winSound = document.getElementById("winSound");
 const card = document.getElementById("card");
 
 const funnyMessages = [
-    "Are you sure? 🤨",
+    "Are you sure? 🥺",
+    "Awww don’t do that.",
     "Nope not gonna happen.",
-    "Try again 😌",
-    "Wrong answer.",
-    "System error: No not allowed.",
+    "Wrong answer 😌",
+    "That option is unavailable.",
     "Bebu override activated 💖",
     "Nice try 😭"
 ];
 
 let clickCount = 0;
 
-// Start No beside Yes
+// Position No beside Yes
 window.onload = () => {
     const rect = yesBtn.getBoundingClientRect();
     noBtn.style.left = (rect.right + 10) + "px";
     noBtn.style.top = rect.top + "px";
 };
 
-// Move No randomly
 function moveNo() {
     const padding = 20;
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
@@ -182,7 +182,6 @@ function moveNo() {
     noBtn.style.top = y + "px";
 }
 
-// Countdown
 function startCountdown() {
     let time = 3;
     countdownEl.style.display = "block";
@@ -200,7 +199,9 @@ function startCountdown() {
 
 function handleNo(e) {
     e.preventDefault();
-    boing.play();
+    awwSound.currentTime = 0;
+    awwSound.play();
+
     funnyText.innerText = funnyMessages[clickCount % funnyMessages.length];
     clickCount++;
     moveNo();
@@ -212,58 +213,3 @@ function handleNo(e) {
 
     if (clickCount === 8) {
         startCountdown();
-    }
-}
-
-noBtn.addEventListener("click", handleNo);
-
-document.addEventListener("touchstart", (e) => {
-    const touch = e.touches[0];
-    const rect = noBtn.getBoundingClientRect();
-    const distance = Math.hypot(
-        touch.clientX - (rect.left + rect.width/2),
-        touch.clientY - (rect.top + rect.height/2)
-    );
-    if (distance < 80) handleNo(e);
-});
-
-yesBtn.addEventListener("click", () => {
-    applause.play();
-    message.style.display = "block";
-    funnyText.style.display = "none";
-    warning.style.display = "none";
-    countdownEl.style.display = "none";
-    yesBtn.style.display = "none";
-    noBtn.style.display = "none";
-    card.classList.remove("shake");
-    launchConfetti();
-});
-
-// Floating hearts
-function createHeart() {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerHTML = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 5000);
-}
-setInterval(createHeart, 400);
-
-// Confetti
-function launchConfetti() {
-    for (let i = 0; i < 150; i++) {
-        const confetti = document.createElement("div");
-        confetti.className = "confetti";
-        confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.background = `hsl(${Math.random()*360},100%,50%)`;
-        confetti.style.animationDuration = (Math.random() * 3 + 2) + "s";
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 4000);
-    }
-}
-</script>
-
-</body>
-</html>
